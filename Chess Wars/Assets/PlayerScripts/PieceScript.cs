@@ -229,9 +229,18 @@ public class PieceScript : MonoBehaviour
 
     bool CanMoveKnight(int destX, int destY, int currX, int currY)
     {
+        bool p1turn = player.p1Turn;
+        int endind = (destY * 8) + destX;
         int x = Mathf.Abs(destX - currX);
         int y = Mathf.Abs(destY - currY);
-        return ((x == 2 && y == 1) || (x == 1 && y == 2));
+        bool[] array1 = board.p1Board;
+        bool[] array2 = board.p2Board;
+        if ((x == 2 && y == 1) || (x == 1 && y == 2))
+        {
+            if ((!array1[endind] && p1turn) || (!array2[endind] && !p1turn))
+                return (true);
+        }
+        return (false);
     }
 
     public void ChoosePiece()
