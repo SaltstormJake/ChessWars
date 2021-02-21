@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] BoardScript board = null;
-
+    [SerializeField] PlayerTextScript textScript = null;
     PieceScript selectedPiece = null;
     bool p1Turn = true;
     bool pieceChosen = false;
@@ -29,7 +29,9 @@ public class PlayerScript : MonoBehaviour
                 if(row < 10 && col < 10)
                 {
                     if (pieceChosen)
+                    {
                         MakeMove(row, col);
+                    }
                     else
                         SelectPiece(row, col, p1Turn, hit.collider.gameObject);
                 }
@@ -54,11 +56,12 @@ public class PlayerScript : MonoBehaviour
 
     void MakeMove(int row, int col)
     {
-        selectedPiece.PrintPiece();
         if (!selectedPiece.CanMove(col, row))
             return;
         selectedPiece.MovePiece(row, col);
         selectedPiece = null;
         pieceChosen = false;
+        p1Turn = !p1Turn;
+        textScript.SwitchPlayer();
     }
 }

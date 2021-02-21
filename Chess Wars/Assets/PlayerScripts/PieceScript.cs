@@ -25,7 +25,9 @@ public class PieceScript : MonoBehaviour
 
     SpriteRenderer thisSprite = null;
 
-    [SerializeField] private BoardScript board = null;
+    private BoardScript board = null;
+
+    [SerializeField] PlayerTextScript textScript = null;
 
     int iterator = 0;
 
@@ -34,6 +36,7 @@ public class PieceScript : MonoBehaviour
         thisSprite = gameObject.GetComponent<SpriteRenderer>();
         if (!playerOne)
             iterator += 5;
+        board = GameObject.Find("Board").GetComponent<BoardScript>();
     }
     // Start is called before the first frame update
     void Start()
@@ -69,7 +72,7 @@ public class PieceScript : MonoBehaviour
                 thisSprite.sprite = pieceSprites[4 + iterator];
                 break;
             case Ranks.KNIGHT:
-                Debug.Log("Player wins");
+                textScript.PlayerWins(playerOne);
                 break;
             default:
                 break;
@@ -83,6 +86,16 @@ public class PieceScript : MonoBehaviour
         int currX = Mathf.FloorToInt(transform.position.x);
         int currY = Mathf.FloorToInt(transform.position.y);
         Debug.Log("DestX:" + destX + " CurrX:" + currX + "\nDestY:" + destY + " CurrY:" + currY);
+        if (playerOne)
+        {
+            if (board.GetP1State(destY, destX))
+                return false;
+        }
+        else
+        {
+            if (board.GetP2State(destX, destY))
+                return false;
+        }
         switch (rank)
         {
             case Ranks.PAWN:
@@ -182,17 +195,76 @@ public class PieceScript : MonoBehaviour
     {
         if (playerOne)
         {
-            board.bits.SetP1State((int)transform.position.y, (int)transform.position.x);
+            board.SetP1State((int)transform.position.y, (int)transform.position.x);
         }
         else
         {
-            board.bits.SetP2State((int)transform.position.y, (int)transform.position.x);
+            board.SetP2State((int)transform.position.y, (int)transform.position.x);
         }
+        bool CanCapture = false;
+        if (playerOne)
+        {
+            CanCapture = board.GetP2State(row, col);
+        }
+        else
+        {
+            CanCapture = board.GetP1State(row, col);
+        }
+        if (CanCapture)
+        {
+            Collider[] colliders = Physics.OverlapSphere(new Vector3(col, row, 0), 0.1f);
+            GameObject capturedPiece = colliders[0].gameObject;
+            capturedPiece.GetComponent<PieceScript>().Death();
+            Promote();
+        }
+
         Vector3 pos = transform.position;
         pos.x = col;
         pos.y = row;
         transform.position = pos;
+
+        if (playerOne)
+        {
+            board.SetP1State((int)transform.position.y, (int)transform.position.x);
+        }
+        else
+        {
+            board.SetP2State((int)transform.position.y, (int)transform.position.x);
+        }
+
         ChoosePiece();
+       // board.PrintBoard();
+    }
+
+    public void Death()
+    {
+        if (playerOne)
+        {
+            board.SetP1State((int)transform.position.y, (int)transform.position.x);
+        }
+        else
+        {
+            board.SetP2State((int)transform.position.y, (int)transform.position.x);
+        }
+        int newSpotR = Random.Range(0, 8);
+        int newSpotC = Random.Range(0, 8);
+        while(board.GetP1State(newSpotR, newSpotC) || board.GetP2State(newSpotR, newSpotC))
+        {
+            newSpotR = Random.Range(0, 8);
+            newSpotC = Random.Range(0, 8);
+        }
+        Vector3 pos = transform.position;
+        pos.y = newSpotR;
+        pos.x = newSpotC;
+        transform.position = pos;
+        if (playerOne)
+        {
+            board.SetP1State(newSpotR, newSpotC);
+        }
+        else
+        {
+            board.SetP2State(newSpotR, newSpotC);
+        }
     }
 
 }

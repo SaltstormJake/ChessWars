@@ -23,9 +23,9 @@ public class BitboardScript : MonoBehaviour
         return GetCellState(p1Board, row, col);
     }
 
-    public long SetP1State(int row, int col)
+    public void SetP1State(int row, int col)
     {
-        return SetCellState(p1Board, row, col);
+        p1Board = SetCellState(p1Board, row, col);
     }
 
     public bool GetP2State(int row, int col)
@@ -33,9 +33,9 @@ public class BitboardScript : MonoBehaviour
         return GetCellState(p2Board, row, col);
     }
 
-    public long SetP2State(int row, int col)
+    public void SetP2State(int row, int col)
     {
-        return SetCellState(p2Board, row, col);
+        p2Board = SetCellState(p2Board, row, col);
     }
 
     public long SetCellState(long bitboard, int row, int col)
@@ -50,5 +50,19 @@ public class BitboardScript : MonoBehaviour
     {
         long mask = 1L << (row * 8 + col);
         return ((bitboard & mask) != 0);
+    }
+
+    public void PrintBoard()
+    {
+      /*  Debug.Log("P1 Board:");
+        for(int i = 0; i < 8; ++i)
+        {
+            string row = "";
+            for(int j = 0; j < 8; ++j)
+            {
+                row += p1Board >> (i * 8 + j);
+            }
+            Debug.Log(row);
+        }*/
     }
 }
