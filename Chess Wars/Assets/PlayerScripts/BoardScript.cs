@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class BoardScript : MonoBehaviour
 {
-    GameObject[] pieces = new GameObject[64];
-    BitboardScript bits = null;
-
+    public GameObject[] pieces = new GameObject[64];
+    [SerializeField] BitboardScript p1Bits = null;
+    [SerializeField] BitboardScript p2Bits = null;
     [SerializeField] GameObject[] piecePrefabs = null;
 
     void Awake()
     {
-        bits = gameObject.GetComponent<BitboardScript>();
+
     }
     // Start is called before the first frame update
     void Start()
@@ -25,5 +25,9 @@ public class BoardScript : MonoBehaviour
         
     }
 
+    void UpdateBoard()
+    {
+
+    }
 
 }
