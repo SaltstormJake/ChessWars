@@ -34,8 +34,14 @@ public class PieceScript : MonoBehaviour
 
     int iterator = 0;
 
+    AudioSource sound = null;
+
+    [SerializeField] AudioClip select = null;
+    [SerializeField] AudioClip attack = null;
+
     void Awake()
     {
+        sound = GetComponent<AudioSource>();
         thisSprite = gameObject.GetComponent<SpriteRenderer>();
         if (!playerOne)
             iterator += 5;
@@ -57,6 +63,8 @@ public class PieceScript : MonoBehaviour
 
     void Promote()
     {
+        sound.clip = attack;
+        sound.Play();
         switch (rank)
         {
             case Ranks.PAWN:
@@ -119,7 +127,9 @@ public class PieceScript : MonoBehaviour
 
     bool CanMovePawn(int destX, int destY, int currX, int currY)
     {
-        return (Mathf.Abs(destX - currX) + Mathf.Abs(destY - currY) == 1);
+        //return (Mathf.Abs(destX - currX) + Mathf.Abs(destY - currY) == 1);
+        return (Mathf.Abs(destX - currX) <= 1 && Mathf.Abs(destY - currY) <= 1
+            && Mathf.Abs(destX - currX) + Mathf.Abs(destY - currY) > 0);
     }
 
     bool CanMoveBishop(int destX, int destY, int currX, int currY)
@@ -251,6 +261,8 @@ public class PieceScript : MonoBehaviour
         }
         else
         {
+            sound.clip = select;
+            sound.Play();
             switch (rank)
             {
                 case Ranks.PAWN:

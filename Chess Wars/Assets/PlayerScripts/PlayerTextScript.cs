@@ -7,15 +7,21 @@ public class PlayerTextScript : MonoBehaviour
     bool player1 = true;
     Text text = null;
     bool won = false;
+    [SerializeField] Text winningText = null;
     [SerializeField] PlayerScript player;
+    [SerializeField] AudioSource musicSource = null;
+    private AudioSource sound = null;
     private void Awake()
     {
+        sound = GetComponent<AudioSource>();
         text = this.GetComponent<Text>();
     }
     // Start is called before the first frame update
     void Start()
     {
-        text.text = "Player 1's Turn";
+        //text.text = "White's Turn";
+        text.text = "";
+        winningText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -28,25 +34,34 @@ public class PlayerTextScript : MonoBehaviour
     {
         if (!won)
         {
-            if (player1)
-                text.text = "Player 2's Turn";
-            else
-                text.text = "Player 1's Turn";
+            //if (player1)
+            //    text.text = "Black's Turn";
+            //else
+            //    text.text = "White's Turn";
             player1 = !player1;
         }
     }
 
     public void PlayerWins(bool playerOne)
     {
+        winningText.gameObject.SetActive(true);
         if (playerOne)
         {
-            text.text = "Player One Wins";
+            winningText.text = "White Wins";
         }
         else
         {
-            text.text = "Player Two Wins";
+            winningText.text = "Black Wins";
         }
         won = true;
         Destroy(player);
+        sound.Play();
+        musicSource.Stop();
+        Invoke("ReturnToTitleScreen", 3.0f);
+    }
+
+    void ReturnToTitleScreen()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("titleScreen");
     }
 }
