@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PieceScript : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class PieceScript : MonoBehaviour
 
     private BoardScript board = null;
 
+    public PlayerScript player = null;
+
     [SerializeField] PlayerTextScript textScript = null;
 
     int iterator = 0;
@@ -37,6 +40,7 @@ public class PieceScript : MonoBehaviour
         if (!playerOne)
             iterator += 5;
         board = GameObject.Find("Board").GetComponent<BoardScript>();
+        player = GameObject.Find("PlayerManager").GetComponent<PlayerScript>();
     }
     // Start is called before the first frame update
     void Start()
@@ -120,12 +124,92 @@ public class PieceScript : MonoBehaviour
 
     bool CanMoveBishop(int destX, int destY, int currX, int currY)
     {
-        return (Mathf.Abs(destX - currX) == Mathf.Abs(destY - currY) && (Mathf.Abs(destX - currX) != 0));
+        int startind = (currY * 8) + currX; //check with him to see this right
+        int endind = (destY * 8) + destX;
+        int absvaluediff = Math.Abs(endind - startind);
+        bool p1turn = player.p1Turn;
+        bool[] array1 = board.p1Board;
+        bool[] array2 = board.p2Board;
+        int add;
+        if (Mathf.Abs(destX - currX) == Mathf.Abs(destY - currY) && (Mathf.Abs(destX - currX) != 0))
+        {
+            if (absvaluediff == 63)
+                add = (endind - startind) / 7;
+            else if (absvaluediff % 9 == 0)
+                add = (endind - startind > 0 ? 9 : -9);
+            else if (absvaluediff % 7 == 0)
+                add = (endind - startind > 0 ? 7 : -7);
+            else
+                return (false);
+            Debug.Log("Add:" + add);
+
+            startind += add;
+            while (startind != endind)
+            {
+                if (array1[startind] || array2[startind])
+                {
+                    return (false);
+                }
+                startind += add;
+            }
+            if (p1turn)
+            {
+                if (array1[endind])
+                    return (false);
+                else
+                    return (true);
+            }
+            else
+            {
+                if (array2[endind])
+                    return (false);
+                else
+                    return (true);
+            }
+        }
+        else
+            return (false);
     }
 
     bool CanMoveRook(int destX, int destY, int currX, int currY)
     {
-        return ((Mathf.Abs(destX - currX) > 0) ^ (Mathf.Abs(destY - currY) > 0));
+        bool[] array1 = board.p1Board;
+        bool[] array2 = board.p2Board;
+        bool p1turn = player.p1Turn;
+        if ((Mathf.Abs(destX - currX) > 0) ^ (Mathf.Abs(destY - currY) > 0))
+        {
+            int startind = (currY * 8) + currX; //check with him to see this right
+            int endind = (destY * 8) + destX;
+            int add;
+            if (startind - (startind % 8) == endind - (endind % 8))
+                add = (startind < endind ? 1 : -1);
+            else
+                add = (startind < endind ? 8 : -8);
+            startind += add;
+            while (startind != endind)
+            {
+                if (array1[startind] || array2[startind]) //all zeros where no pieces, right?
+                    return (false);
+                startind += add;
+            }
+            if (p1turn)
+            {
+                if (!array1[startind])
+                    return (true);
+                else
+                    return (false);
+            }
+            else
+            {
+                if (!array2[startind])
+                    return (true);
+                else
+                    return (false);
+            }
+
+        }
+        else
+            return (false);
     }
 
     bool CanMoveQueen(int destX, int destY, int currX, int currY)
@@ -246,12 +330,12 @@ public class PieceScript : MonoBehaviour
         {
             board.SetP2State((int)transform.position.y, (int)transform.position.x);
         }
-        int newSpotR = Random.Range(0, 8);
-        int newSpotC = Random.Range(0, 8);
+        int newSpotR = UnityEngine.Random.Range(0, 8);
+        int newSpotC = UnityEngine.Random.Range(0, 8);
         while(board.GetP1State(newSpotR, newSpotC) || board.GetP2State(newSpotR, newSpotC))
         {
-            newSpotR = Random.Range(0, 8);
-            newSpotC = Random.Range(0, 8);
+            newSpotR = UnityEngine.Random.Range(0, 8);
+            newSpotC = UnityEngine.Random.Range(0, 8);
         }
         Vector3 pos = transform.position;
         pos.y = newSpotR;

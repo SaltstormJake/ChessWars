@@ -7,7 +7,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] BoardScript board = null;
     [SerializeField] PlayerTextScript textScript = null;
     PieceScript selectedPiece = null;
-    bool p1Turn = true;
+    public bool p1Turn = true;
     bool pieceChosen = false;
     // Start is called before the first frame update
     void Start()

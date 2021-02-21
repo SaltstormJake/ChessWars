@@ -11,8 +11,8 @@ public class BoardScript : MonoBehaviour
     [SerializeField] GameObject space = null;
     [SerializeField] Material black = null;
 
-    bool[] p1Board = new bool[64];
-    bool[] p2Board = new bool[64];
+    public bool[] p1Board = new bool[64];
+    public bool[] p2Board = new bool[64];
 
     void Awake()
     {
