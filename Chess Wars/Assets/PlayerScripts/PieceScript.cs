@@ -25,20 +25,21 @@ public class PieceScript : MonoBehaviour
 
     SpriteRenderer thisSprite = null;
 
-    int player = 0;
+    [SerializeField] private BoardScript board = null;
+
+    int iterator = 0;
 
     void Awake()
     {
         thisSprite = gameObject.GetComponent<SpriteRenderer>();
-        if (playerOne)
-            player = 1;
-        else
-            player = 2;
+        if (!playerOne)
+            iterator += 5;
     }
     // Start is called before the first frame update
     void Start()
     {
         rank = Ranks.PAWN;
+        thisSprite.sprite = pieceSprites[0 + iterator];
     }
 
     // Update is called once per frame
@@ -53,19 +54,19 @@ public class PieceScript : MonoBehaviour
         {
             case Ranks.PAWN:
                 rank = Ranks.BISHOP;
-                thisSprite.sprite = pieceSprites[1];
+                thisSprite.sprite = pieceSprites[1 + iterator];
                 break;
             case Ranks.BISHOP:
                 rank = Ranks.ROOK;
-                thisSprite.sprite = pieceSprites[2];
+                thisSprite.sprite = pieceSprites[2 + iterator];
                 break;
             case Ranks.ROOK:
                 rank = Ranks.QUEEN;
-                thisSprite.sprite = pieceSprites[3];
+                thisSprite.sprite = pieceSprites[3 + iterator];
                 break;
             case Ranks.QUEEN:
                 rank = Ranks.KNIGHT;
-                thisSprite.sprite = pieceSprites[4];
+                thisSprite.sprite = pieceSprites[4 + iterator];
                 break;
             case Ranks.KNIGHT:
                 Debug.Log("Player wins");
@@ -81,6 +82,7 @@ public class PieceScript : MonoBehaviour
         int destY = Mathf.FloorToInt(y);
         int currX = Mathf.FloorToInt(transform.position.x);
         int currY = Mathf.FloorToInt(transform.position.y);
+        Debug.Log("DestX:" + destX + " CurrX:" + currX + "\nDestY:" + destY + " CurrY:" + currY);
         switch (rank)
         {
             case Ranks.PAWN:
@@ -127,27 +129,70 @@ public class PieceScript : MonoBehaviour
 
     public void ChoosePiece()
     {
-        switch (rank)
+        if (selected)
         {
-            case Ranks.PAWN:
-                thisSprite.sprite = highlightedPieces[0];
-                break;
-            case Ranks.BISHOP:
-                thisSprite.sprite = highlightedPieces[1];
-                break;
-            case Ranks.ROOK:
-                thisSprite.sprite = highlightedPieces[2];
-                break;
-            case Ranks.QUEEN:
-                thisSprite.sprite = highlightedPieces[3];
-                break;
-            case Ranks.KNIGHT:
-                thisSprite.sprite = highlightedPieces[4];
-                break;
-            default:
-                break;
+            switch (rank)
+            {
+                case Ranks.PAWN:
+                    thisSprite.sprite = pieceSprites[0 + iterator];
+                    break;
+                case Ranks.BISHOP:
+                    thisSprite.sprite = pieceSprites[1 + iterator];
+                    break;
+                case Ranks.ROOK:
+                    thisSprite.sprite = pieceSprites[2 + iterator];
+                    break;
+                case Ranks.QUEEN:
+                    thisSprite.sprite = pieceSprites[3 + iterator];
+                    break;
+                case Ranks.KNIGHT:
+                    thisSprite.sprite = pieceSprites[4 + iterator];
+                    break;
+                default:
+                    break;
+            }
         }
+        else
+        {
+            switch (rank)
+            {
+                case Ranks.PAWN:
+                    thisSprite.sprite = highlightedPieces[0 + iterator];
+                    break;
+                case Ranks.BISHOP:
+                    thisSprite.sprite = highlightedPieces[1 + iterator];
+                    break;
+                case Ranks.ROOK:
+                    thisSprite.sprite = highlightedPieces[2 + iterator];
+                    break;
+                case Ranks.QUEEN:
+                    thisSprite.sprite = highlightedPieces[3 + iterator];
+                    break;
+                case Ranks.KNIGHT:
+                    thisSprite.sprite = highlightedPieces[4 + iterator];
+                    break;
+                default:
+                    break;
+            }
+        }
+        selected = !selected;
     }
 
+    public void MovePiece(int row, int col)
+    {
+        if (playerOne)
+        {
+            board.bits.SetP1State((int)transform.position.y, (int)transform.position.x);
+        }
+        else
+        {
+            board.bits.SetP2State((int)transform.position.y, (int)transform.position.x);
+        }
+        Vector3 pos = transform.position;
+        pos.x = col;
+        pos.y = row;
+        transform.position = pos;
+        ChoosePiece();
+    }
 
 }
